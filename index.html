@@ -10,32 +10,49 @@
 
 <div id="loginBox">
   <h2>Admin Login</h2>
-  <input id="email" placeholder="Email" type="email"><br><br>
-  <input id="password" placeholder="Parol" type="password"><br><br>
+  <input id="email" type="email" placeholder="Email"><br><br>
+  <input id="password" type="password" placeholder="Parol"><br><br>
   <button onclick="login()">Kirish</button>
 </div>
 
 <div id="adminBox" style="display:none;">
   <button onclick="logout()">Chiqish</button>
 
-  <h2>Mahsulot qo‘shish</h2>
+  <h2 id="formTitle">Mahsulot qo‘shish</h2>
+
   <input id="name" placeholder="Mahsulot nomi"><br><br>
   <input id="price" placeholder="Narx"><br><br>
   <input id="category" placeholder="Kategoriya"><br><br>
   <input id="image" placeholder="Rasm URL"><br><br>
   <textarea id="description" placeholder="Tavsif"></textarea><br><br>
 
-  <button onclick="addProduct()">Qo‘shish</button>
+  <button onclick="saveProduct()" id="saveBtn">Qo‘shish</button>
+  <button onclick="cancelEdit()" id="cancelBtn" style="display:none;">Bekor qilish</button>
 
   <hr>
+
   <h2>Mahsulotlar</h2>
   <div id="list"></div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCsx23vnQ4jvGv0reltApc4fEvhF9VHKIU",
@@ -54,6 +71,8 @@ const loginBox = document.getElementById("loginBox");
 const adminBox = document.getElementById("adminBox");
 const listDiv = document.getElementById("list");
 
+let editingId = null;
+
 onAuthStateChanged(auth, (user) => {
   if (user) {
     loginBox.style.display = "none";
@@ -66,10 +85,9 @@ onAuthStateChanged(auth, (user) => {
 });
 
 window.login = async function () {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
   try {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
     await signInWithEmailAndPassword(auth, email, password);
     alert("Kirdingiz!");
   } catch (error) {
@@ -85,31 +103,90 @@ async function loadProducts() {
   const querySnapshot = await getDocs(collection(db, "products"));
   listDiv.innerHTML = "";
 
-  querySnapshot.forEach(doc => {
-    const data = doc.data();
-    listDiv.innerHTML += `<p>${data.name} - ${data.price} so'm</p>`;
+  querySnapshot.forEach((item) => {
+    const data = item.data();
+
+    listDiv.innerHTML += `
+      <div style="border:1px solid #ddd; padding:12px; margin:10px 0; border-radius:8px;">
+        <h3>${data.name}</h3>
+        <p>${data.description || ""}</p>
+        <b>${data.price} so'm</b>
+        <p>Kategoriya: ${data.category}</p>
+        <button onclick='editProduct("${item.id}", ${JSON.stringify(data).replace(/'/g, "&apos;")})'>Edit</button>
+        <button onclick='deleteProduct("${item.id}")'>Delete</button>
+      </div>
+    `;
   });
 }
 
-window.addProduct = async function () {
+window.saveProduct = async function () {
   const name = document.getElementById("name").value;
   const price = parseInt(document.getElementById("price").value);
   const category = document.getElementById("category").value;
   const image = document.getElementById("image").value;
   const description = document.getElementById("description").value;
 
-  await addDoc(collection(db, "products"), {
+  const productData = {
     name,
     price,
     category,
     image,
     description,
     available: true
-  });
+  };
 
-  alert("Qo‘shildi!");
+  if (editingId) {
+    await updateDoc(doc(db, "products", editingId), productData);
+    alert("Mahsulot yangilandi!");
+  } else {
+    await addDoc(collection(db, "products"), productData);
+    alert("Mahsulot qo‘shildi!");
+  }
+
+  clearForm();
   loadProducts();
 };
+
+window.editProduct = function (id, data) {
+  editingId = id;
+
+  document.getElementById("name").value = data.name || "";
+  document.getElementById("price").value = data.price || "";
+  document.getElementById("category").value = data.category || "";
+  document.getElementById("image").value = data.image || "";
+  document.getElementById("description").value = data.description || "";
+
+  document.getElementById("formTitle").innerText = "Mahsulotni tahrirlash";
+  document.getElementById("saveBtn").innerText = "Saqlash";
+  document.getElementById("cancelBtn").style.display = "inline-block";
+};
+
+window.cancelEdit = function () {
+  clearForm();
+};
+
+window.deleteProduct = async function (id) {
+  const confirmDelete = confirm("Rostdan ham o‘chirmoqchimisiz?");
+  if (!confirmDelete) return;
+
+  await deleteDoc(doc(db, "products", id));
+  alert("Mahsulot o‘chirildi!");
+  loadProducts();
+};
+
+function clearForm() {
+  editingId = null;
+
+  document.getElementById("name").value = "";
+  document.getElementById("price").value = "";
+  document.getElementById("category").value = "";
+  document.getElementById("image").value = "";
+  document.getElementById("description").value = "";
+
+  document.getElementById("formTitle").innerText = "Mahsulot qo‘shish";
+  document.getElementById("saveBtn").innerText = "Qo‘shish";
+  document.getElementById("cancelBtn").style.display = "none";
+}
 </script>
 
 </body>
