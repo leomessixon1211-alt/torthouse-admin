@@ -1,28 +1,41 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
+  <meta charset="UTF-8" />
   <title>Tort House Admin</title>
 </head>
 <body>
 
-<h1>Admin Panel</h1>
+<h1>Tort House Admin</h1>
 
-<input id="name" placeholder="Mahsulot nomi"><br><br>
-<input id="price" placeholder="Narx"><br><br>
-<input id="category" placeholder="Kategoriya"><br><br>
-<input id="image" placeholder="Rasm URL"><br><br>
-<textarea id="description" placeholder="Tavsif"></textarea><br><br>
+<div id="loginBox">
+  <h2>Admin Login</h2>
+  <input id="email" placeholder="Email" type="email"><br><br>
+  <input id="password" placeholder="Parol" type="password"><br><br>
+  <button onclick="login()">Kirish</button>
+</div>
 
-<button onclick="addProduct()">Qo‘shish</button>
+<div id="adminBox" style="display:none;">
+  <button onclick="logout()">Chiqish</button>
 
-<hr>
+  <h2>Mahsulot qo‘shish</h2>
+  <input id="name" placeholder="Mahsulot nomi"><br><br>
+  <input id="price" placeholder="Narx"><br><br>
+  <input id="category" placeholder="Kategoriya"><br><br>
+  <input id="image" placeholder="Rasm URL"><br><br>
+  <textarea id="description" placeholder="Tavsif"></textarea><br><br>
 
-<h2>Mahsulotlar</h2>
-<div id="list"></div>
+  <button onclick="addProduct()">Qo‘shish</button>
+
+  <hr>
+  <h2>Mahsulotlar</h2>
+  <div id="list"></div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCsx23vnQ4jvGv0reltApc4fEvhF9VHKIU",
@@ -35,8 +48,38 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
+const loginBox = document.getElementById("loginBox");
+const adminBox = document.getElementById("adminBox");
 const listDiv = document.getElementById("list");
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loginBox.style.display = "none";
+    adminBox.style.display = "block";
+    loadProducts();
+  } else {
+    loginBox.style.display = "block";
+    adminBox.style.display = "none";
+  }
+});
+
+window.login = async function () {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    alert("Kirdingiz!");
+  } catch (error) {
+    alert("Login xato: " + error.message);
+  }
+};
+
+window.logout = async function () {
+  await signOut(auth);
+};
 
 async function loadProducts() {
   const querySnapshot = await getDocs(collection(db, "products"));
@@ -66,9 +109,7 @@ window.addProduct = async function () {
 
   alert("Qo‘shildi!");
   loadProducts();
-}
-
-loadProducts();
+};
 </script>
 
 </body>
