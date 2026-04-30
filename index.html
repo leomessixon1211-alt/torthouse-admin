@@ -12,10 +12,10 @@
       --cream:#fff7ec;
       --card:#ffffff;
       --muted:#8d7568;
-      --gold:#c7a24a;
       --line:#eadfd5;
       --danger:#c62828;
       --green:#2e7d32;
+      --gold:#c7a24a;
     }
 
     * { box-sizing:border-box; }
@@ -25,35 +25,6 @@
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
       background:linear-gradient(180deg,#fffaf3,var(--cream));
       color:var(--dark);
-    }
-
-    .login-page {
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
-      background:linear-gradient(135deg,var(--burgundy),#4b0014);
-    }
-
-    .login-card {
-      width:100%;
-      max-width:420px;
-      background:white;
-      border-radius:26px;
-      padding:28px;
-      box-shadow:0 25px 70px rgba(0,0,0,.25);
-    }
-
-    .login-card h1 {
-      margin:0 0 8px;
-      color:var(--burgundy);
-      font-size:30px;
-    }
-
-    .login-card p {
-      margin:0 0 22px;
-      color:var(--muted);
     }
 
     input, textarea, select {
@@ -86,6 +57,35 @@
     }
 
     button:active { transform:scale(.97); }
+
+    .login-page {
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:linear-gradient(135deg,var(--burgundy),#4b0014);
+    }
+
+    .login-card {
+      width:100%;
+      max-width:420px;
+      background:white;
+      border-radius:26px;
+      padding:28px;
+      box-shadow:0 25px 70px rgba(0,0,0,.25);
+    }
+
+    .login-card h1 {
+      margin:0 0 8px;
+      color:var(--burgundy);
+      font-size:30px;
+    }
+
+    .login-card p {
+      margin:0 0 22px;
+      color:var(--muted);
+    }
 
     .btn-main {
       width:100%;
@@ -152,6 +152,7 @@
       border-radius:24px;
       padding:20px;
       box-shadow:0 15px 35px rgba(45,24,16,.07);
+      margin-bottom:22px;
     }
 
     .panel h2 {
@@ -199,11 +200,7 @@
       margin-bottom:16px;
     }
 
-    .tools input {
-      background:white;
-    }
-
-    .product-list {
+    .product-list, .review-list {
       display:grid;
       gap:14px;
     }
@@ -262,6 +259,76 @@
     .available { background:#e7f6e8; color:var(--green); }
     .hidden-btn { background:#eee; color:#666; }
 
+    .review {
+      background:#fffdf9;
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:16px;
+    }
+
+    .review-top {
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      margin-bottom:8px;
+    }
+
+    .stars {
+      color:var(--gold);
+      font-size:20px;
+      letter-spacing:2px;
+    }
+
+    .review-date {
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    .review-tag {
+      display:inline-block;
+      background:rgba(118,0,31,.08);
+      color:var(--burgundy);
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:900;
+      margin:6px 0;
+    }
+
+    .review p {
+      margin:8px 0 0;
+      color:var(--dark);
+      line-height:1.5;
+    }
+
+    .stats {
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .stat {
+      background:#fffdf9;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      text-align:center;
+    }
+
+    .stat strong {
+      display:block;
+      color:var(--burgundy);
+      font-size:24px;
+    }
+
+    .stat span {
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+    }
+
     .toast {
       position:fixed;
       left:50%;
@@ -297,7 +364,7 @@
         width:100%;
       }
 
-      .row {
+      .row, .stats {
         grid-template-columns:1fr;
       }
 
@@ -322,7 +389,7 @@
   <div id="loginPage" class="login-page">
     <div class="login-card">
       <h1>Tort House Admin</h1>
-      <p>Mahsulotlarni boshqarish uchun email va parol bilan kiring.</p>
+      <p>Mahsulotlar va mijoz fikrlarini boshqarish uchun kiring.</p>
 
       <label>Email</label>
       <input id="email" type="email" placeholder="admin@gmail.com">
@@ -339,7 +406,7 @@
       <div class="topbar-inner">
         <div class="brand">
           <h1>Tort House Admin</h1>
-          <p>Menu mahsulotlarini qo‘shish, o‘zgartirish va o‘chirish</p>
+          <p>Menu mahsulotlari va mijoz fikrlari</p>
         </div>
         <button class="logout" onclick="logout()">Chiqish</button>
       </div>
@@ -350,7 +417,7 @@
 
         <section class="panel">
           <h2 id="formTitle">Yangi mahsulot qo‘shish</h2>
-          <p class="hint">Rasm URL, mahsulot nomi va narxini kiriting. Saqlagandan keyin mahsulot menu saytida avtomatik chiqadi.</p>
+          <p class="hint">Mahsulotni saqlagandan keyin u menu saytida avtomatik chiqadi.</p>
 
           <label>Mahsulot nomi</label>
           <input id="name" placeholder="Masalan: Napoleon">
@@ -382,18 +449,40 @@
           <button id="cancelBtn" class="cancel-btn" onclick="cancelEdit()">Bekor qilish</button>
         </section>
 
-        <section class="panel">
-          <h2>Mahsulotlar ro‘yxati</h2>
-          <p class="hint">Bu yerdan mahsulotni tahrirlash, o‘chirish yoki menu’da yashirish mumkin.</p>
+        <div>
+          <section class="panel">
+            <h2>Mahsulotlar ro‘yxati</h2>
+            <p class="hint">Tahrirlash, o‘chirish yoki menu’dan vaqtincha yashirish mumkin.</p>
 
-          <div class="tools">
-            <input id="search" placeholder="Mahsulot qidirish..." oninput="renderProducts()">
-          </div>
+            <div class="tools">
+              <input id="search" placeholder="Mahsulot qidirish..." oninput="renderProducts()">
+            </div>
 
-          <div id="productList" class="product-list">
-            Yuklanmoqda...
-          </div>
-        </section>
+            <div id="productList" class="product-list">Yuklanmoqda...</div>
+          </section>
+
+          <section class="panel">
+            <h2>Mijoz fikrlari</h2>
+            <p class="hint">QR menu orqali qoldirilgan baholar va izohlar shu yerda ko‘rinadi.</p>
+
+            <div class="stats">
+              <div class="stat">
+                <strong id="reviewCount">0</strong>
+                <span>Fikrlar soni</span>
+              </div>
+              <div class="stat">
+                <strong id="averageRating">0</strong>
+                <span>O‘rtacha baho</span>
+              </div>
+              <div class="stat">
+                <strong id="lastRating">0</strong>
+                <span>Oxirgi baho</span>
+              </div>
+            </div>
+
+            <div id="reviewList" class="review-list">Fikrlar yuklanmoqda...</div>
+          </section>
+        </div>
 
       </div>
     </main>
@@ -403,6 +492,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
     import {
       getFirestore,
       collection,
@@ -410,7 +500,9 @@
       getDocs,
       doc,
       updateDoc,
-      deleteDoc
+      deleteDoc,
+      query,
+      orderBy
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     import {
@@ -434,17 +526,20 @@
     const auth = getAuth(app);
 
     let products = [];
+    let reviews = [];
     let editingId = null;
 
     const loginPage = document.getElementById("loginPage");
     const adminPage = document.getElementById("adminPage");
     const productList = document.getElementById("productList");
+    const reviewList = document.getElementById("reviewList");
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
         loginPage.style.display = "none";
         adminPage.style.display = "block";
         loadProducts();
+        loadReviews();
       } else {
         loginPage.style.display = "flex";
         adminPage.style.display = "none";
@@ -575,6 +670,67 @@
       showToast("Mahsulot o‘chirildi");
       await loadProducts();
     };
+
+    async function loadReviews() {
+      try {
+        const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+        const snapshot = await getDocs(q);
+
+        reviews = snapshot.docs.map(item => ({
+          id: item.id,
+          ...item.data()
+        }));
+
+        renderReviews();
+      } catch (error) {
+        const snapshot = await getDocs(collection(db, "reviews"));
+        reviews = snapshot.docs.map(item => ({
+          id: item.id,
+          ...item.data()
+        }));
+        renderReviews();
+      }
+    }
+
+    function renderReviews() {
+      document.getElementById("reviewCount").textContent = reviews.length;
+
+      if (!reviews.length) {
+        document.getElementById("averageRating").textContent = "0";
+        document.getElementById("lastRating").textContent = "0";
+        reviewList.innerHTML = "<p class='hint'>Hali fikr qoldirilmagan.</p>";
+        return;
+      }
+
+      const totalRating = reviews.reduce((sum, r) => sum + Number(r.rating || 0), 0);
+      const avg = (totalRating / reviews.length).toFixed(1);
+
+      document.getElementById("averageRating").textContent = avg;
+      document.getElementById("lastRating").textContent = reviews[0].rating || 0;
+
+      reviewList.innerHTML = reviews.map(r => {
+        const rating = Number(r.rating || 0);
+        const stars = "★".repeat(rating) + "☆".repeat(5 - rating);
+
+        let dateText = "Sana yo‘q";
+        if (r.createdAt && r.createdAt.toDate) {
+          dateText = r.createdAt.toDate().toLocaleString("uz-UZ");
+        }
+
+        return `
+          <div class="review">
+            <div class="review-top">
+              <div class="stars">${stars}</div>
+              <div class="review-date">${dateText}</div>
+            </div>
+
+            ${r.quick ? `<div class="review-tag">${r.quick}</div>` : ""}
+
+            <p>${r.comment || "Izoh yozilmagan"}</p>
+          </div>
+        `;
+      }).join("");
+    }
 
     function clearForm() {
       editingId = null;
