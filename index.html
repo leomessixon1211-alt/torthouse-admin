@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tort House Admin</title>
+</head>
+<body>
+
+<h1>Admin Panel</h1>
+
+<input id="name" placeholder="Mahsulot nomi"><br><br>
+<input id="price" placeholder="Narx"><br><br>
+<input id="category" placeholder="Kategoriya"><br><br>
+<input id="image" placeholder="Rasm URL"><br><br>
+<textarea id="description" placeholder="Tavsif"></textarea><br><br>
+
+<button onclick="addProduct()">Qo‘shish</button>
+
+<hr>
+
+<h2>Mahsulotlar</h2>
+<div id="list"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCsx23vnQ4jvGv0reltApc4fEvhF9VHKIU",
+  authDomain: "tort-house.firebaseapp.com",
+  projectId: "tort-house",
+  storageBucket: "tort-house.firebasestorage.app",
+  messagingSenderId: "531646484923",
+  appId: "1:531646484923:web:e40a50fabf50519d9ab49e"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const listDiv = document.getElementById("list");
+
+async function loadProducts() {
+  const querySnapshot = await getDocs(collection(db, "products"));
+  listDiv.innerHTML = "";
+
+  querySnapshot.forEach(doc => {
+    const data = doc.data();
+    listDiv.innerHTML += `<p>${data.name} - ${data.price} so'm</p>`;
+  });
+}
+
+window.addProduct = async function () {
+  const name = document.getElementById("name").value;
+  const price = parseInt(document.getElementById("price").value);
+  const category = document.getElementById("category").value;
+  const image = document.getElementById("image").value;
+  const description = document.getElementById("description").value;
+
+  await addDoc(collection(db, "products"), {
+    name,
+    price,
+    category,
+    image,
+    description,
+    available: true
+  });
+
+  alert("Qo‘shildi!");
+  loadProducts();
+}
+
+loadProducts();
+</script>
+
+</body>
+</html>
